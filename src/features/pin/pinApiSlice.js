@@ -26,12 +26,28 @@ export const pinApiSlice = apiSlice.injectEndpoints({
                 // formData: true,
             })
         }),
+        postSavePinByUser: builder.mutation({
+            query: credentials =>({
+                url: 'api/v1/save/',
+                method: 'POST',
+                body: credentials,
+                headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+                },
+            })
+        }),
         getPinByUser: builder.mutation({
             query: credentials => ({
-                url: `/api/v1/pin/${credentials.userId}`,
+                url: `/api/v1/pin/${credentials.userId}/created`,
                 method: 'GET',
             })
         }),
+        getPinSavedByUser: builder.mutation({
+            query: credentials => ({
+                url: `/api/v1/pin/${credentials.userId}/save`,
+                method: 'GET',
+            })
+        })
     })
 })
 
@@ -39,5 +55,7 @@ export const {
     useFeedQueryMutation,
     useGetSavedUserMutation,
     usePostPinMutation,
+    useGetPinSavedByUserMutation,
+    usePostSavePinByUserMutation,
     useGetPinByUserMutation
 } = pinApiSlice    

@@ -11,6 +11,7 @@ import Home from "./container/Home";
 import Login from "./components/Login";
 import Pins from "./container/Pin";
 import Test from "./test";
+import OAuth2RedirectHandler from "./components/OAuth2Handler";
 
 const App = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const App = () => {
        
         <Route path="login" element={<Login />} />
         <Route path="test" element={<Test />} />
+        <Route path="oauth2/redirect" element={<OAuth2RedirectHandler />} />  
 
         {/* <Route path="pin" element={<Pins />} /> */}
 

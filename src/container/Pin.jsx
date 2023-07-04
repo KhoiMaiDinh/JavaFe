@@ -10,7 +10,7 @@ const Pins = ({ user }) => {
   return (
     <div className="px-2 md:px-5">
       <div className="bg-gray-50">
-        <NavBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} user={user && user} />
+        {/* <NavBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} user={user && user} /> */}
       </div>
       <div className="h-full">
         <Routes>
@@ -18,8 +18,8 @@ const Pins = ({ user }) => {
           <Route path="/category/:categoryId" element={<Feed />} />
           <Route path="/pin-detail/:pinId" element={<PinDetail user={user && user} />} />
           <Route path="/create-pin" element={<CreatePin user={user && user} />} />
-          <Route path="/search" element={<Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />} />
-          <Route path="/messenger" element={<Messenger user={user && user} />} />
+          {/* <Route path="/search" element={<Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />} /> */}
+          {/* <Route path="/messenger" element={<Messenger user={user && user} />} /> */}
         </Routes>
       </div>
     </div>

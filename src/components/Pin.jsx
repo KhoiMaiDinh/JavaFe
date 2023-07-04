@@ -6,7 +6,7 @@ import { AiTwotoneDelete } from 'react-icons/ai';
 import { BsFillArrowUpRightCircleFill } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../features/auth/authSlice';
-import { useGetSavedUserMutation } from '../features/pin/pinApiSlice';
+import { useGetSavedUserMutation , usePostSavePinByUserMutation} from '../features/pin/pinApiSlice';
 
 const Pin = ({ pin, postedBy }) => {
   const navigate = useNavigate();
@@ -20,10 +20,30 @@ const Pin = ({ pin, postedBy }) => {
 
   const [savedUser, setSavedUser] = useState([]);
   const [getSavedUser] = useGetSavedUserMutation();
+  const [postSavePinByUser] = usePostSavePinByUserMutation();
   useEffect(() => {
-    getSavedUser({pinId: id}).then(response => setSavedUser(response.data));
+    getSavedUser({pinId: id})
+    .then(response => {
+      setSavedUser(response.data)
+      setAlreadySaved(() => response.data?.filter((item) => item?.userId === user.id))
+    })
   }, [])
-  let alreadySaved = savedUser?.filter((item) => item?.userId === user.id);
+
+  const savePin = () =>{
+    setSavingPost(true);
+    postSavePinByUser({userId: user.id, pinId: id})
+      .then((response)=> {
+        console.log({response})
+        getSavedUser({pinId: id}).then(response => {
+          console.log("reload")
+          setSavedUser([...response.data])
+          setAlreadySaved(() => response.data?.filter((item) => item?.userId === user.id))
+        })
+      })
+      .catch(err => console.log(err));
+    setSavingPost(false);
+  }
+  const [alreadySaved, setAlreadySaved] = useState([]);
   return (
     <div className="m-2">
       <div
@@ -59,12 +79,11 @@ const Pin = ({ pin, postedBy }) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    // savePin(_id);
+                    savePin(user);
                   }}
                   type="button"
                   className="bg-red-500 opacity-70 hover:opacity-100 text-white font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none"
-                >
-                  {savedUser?.length}   {savingPost ? 'Saving' : 'Save'}
+                >   {savingPost ? 'Saving' : 'Save'}
                 </button>
               )}
             </div>
@@ -87,7 +106,7 @@ const Pin = ({ pin, postedBy }) => {
              type="button"
              onClick={(e) => {
                e.stopPropagation();
-              //  deletePin(_id);
+              //  deletePin(user.id);
              }}
              className="bg-white p-2 rounded-full w-8 h-8 flex items-center justify-center text-dark opacity-75 hover:opacity-100 outline-none"
            >
@@ -105,7 +124,7 @@ const Pin = ({ pin, postedBy }) => {
           src={postedBy?.avatarUrl}
           alt="user-profile"
         />
-        <p className="font-semibold capitalize">{postedBy?.firstname + " " +  postedBy?.lastname}</p>
+        <p className="font-semibold capitalize">{postedBy?.name}</p>
       </Link>
     </div>
   )

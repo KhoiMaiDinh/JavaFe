@@ -24,6 +24,7 @@ const PinDetail = () => {
   const [postComment] = usePostCommentMutation();
   const [getComment] = useGetCommentMutation();
 
+  console.log(pinDetail)
   const addComment = async () => {
     if (comment) {
       // console.log({comment});
@@ -103,7 +104,7 @@ const PinDetail = () => {
             </div>
             <Link to={`/user-profile/${pinDetail?.userId}`} className="flex gap-2 mt-5 items-center bg-white rounded-lg ">
               <img src={postedBy?.avatarUrl} className="w-10 h-10 rounded-full" alt="user-profile" />
-              <p className="font-bold">{postedBy?.firstname + ' ' + postedBy?.lastname}</p>
+              <p className="font-bold">{postedBy?.name}</p>
             </Link>
             <h2 className="mt-5 text-2xl">Comments</h2>
             <div className="max-h-370 overflow-y-auto">
@@ -118,7 +119,7 @@ const PinDetail = () => {
                   </Link>
                   
                   <div className="flex flex-col">
-                    <p className="font-bold">{item.user?.firstname + ' ' + item.user?.lastname}</p>
+                    <p className="font-bold">{item.user?.name}</p>
                     <p>{item.comment.comment}</p>
                   </div>
                 </div>

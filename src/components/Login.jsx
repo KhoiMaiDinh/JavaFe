@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // import { FcGoogle } from 'react-icons/fc';
 import shareVideo from '../assets/share.mp4';
 import logo from '../assets/logowhite.png';
+import Facebook_Icon from '../assets/icons8-facebook.svg'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentToken, selectCurrentUser, setCredentials, setUserInfo } from '../features/auth/authSlice';
@@ -46,6 +47,7 @@ const Login = () => {
         setPwd("");
         navigate("/");
       })
+      .catch(err => console.log(err.message))
       
     } catch (err) {
       console.log({err})
@@ -67,19 +69,10 @@ const Login = () => {
 
   const handlePwdInput = (e) => setPwd(e.target.value);
 
-//   const responseGoogle = (response) => {
-//     localStorage.setItem('user', JSON.stringify(response.profileObj));
-//     const { name, googleId, imageUrl } = response.profileObj;
-//     const doc = {
-//       _id: googleId,
-//       _type: 'user',
-//       userName: name,
-//       image: imageUrl,
-//     };
-//     client.createIfNotExists(doc).then(() => {
-//       navigate('/', { replace: true });
-//     });
-//   };
+  const loginWithFacebook = async() => {
+
+  }
+
 
 const content = isLoading ? (
   <h1>Loading...</h1>
@@ -185,6 +178,11 @@ const content = isLoading ? (
               <div className="w-full flex items-center justify-center relative py2">
                 <div className="w-full h-[1px] bg-black"></div>
               </div>
+
+              <a href={"https://localhost:8080/oauth2/authorize/facebook?redirect_uri=https://localhost:3000/oauth2/redirect"} className='w-full text-[#060606] my-2 font-semibold bg-white border-2 border-black rounded-md p-4 text-center flex  items-center justify-center cursor-pointer'>
+                <img src={Facebook_Icon}/>
+                Sign in with Facebook
+              </a>
             </div>
 
             <div className="w-full flex items-center justify-center">
