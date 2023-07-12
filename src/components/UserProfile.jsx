@@ -1,26 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { AiOutlineLogout } from 'react-icons/ai';
-import { useParams, useNavigate } from 'react-router-dom';
-// import { GoogleLogout } from 'react-google-login';
+import React, { useEffect, useState } from "react";
+import { AiOutlineLogout } from "react-icons/ai";
+import { useParams, useNavigate } from "react-router-dom";
+import { logOut } from "../features/auth/authSlice";
+import MasonryLayout from "./MasonryLayout";
+import Spinner from "./Spinner";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentUser } from "../features/auth/authSlice";
+import {
+  useGetPinSavedByUserMutation,
+  useGetPinByUserMutation,
+} from "../features/pin/pinApiSlice";
+import { useLogOutApiMutation } from "../features/auth/authApiSlice";
 
-import MasonryLayout from './MasonryLayout';
-import Spinner from './Spinner';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '../features/auth/authSlice';
-
-const activeBtnStyles = 'bg-red-500 text-white font-bold p-2 rounded-full w-20 outline-none';
-const notActiveBtnStyles = 'bg-primary mr-4 text-black font-bold p-2 rounded-full w-20 outline-none';
+const activeBtnStyles =
+  "bg-red-500 text-white font-bold p-2 rounded-full w-20 outline-none";
+const notActiveBtnStyles =
+  "bg-primary mr-4 text-black font-bold p-2 rounded-full w-20 outline-none";
 
 const UserProfile = () => {
   const [user, setUser] = useState(useSelector(selectCurrentUser));
   const [pins, setPins] = useState();
-  const [text, setText] = useState('Created');
-  const [activeBtn, setActiveBtn] = useState('created');
+  const [text, setText] = useState("Created");
+  const [activeBtn, setActiveBtn] = useState("created");
   const navigate = useNavigate();
   const { userId } = useParams();
+  const dispatch = useDispatch();
 
   const User = useSelector(selectCurrentUser);
 
+  const [logOutApi] = useLogOutApiMutation();
+  const [pinSaveByUser] = useGetPinSavedByUserMutation();
+  const [pinByUser] = useGetPinByUserMutation();
   useEffect(() => {
     // const query = userQuery(userId);
     // client.fetch(query).then((data) => {
@@ -29,25 +39,39 @@ const UserProfile = () => {
   }, [userId]);
 
   useEffect(() => {
-    if (text === 'Created') {
-      // const createdPinsQuery = userCreatedPinsQuery(userId);
-
-      // client.fetch(createdPinsQuery).then((data) => {
-      //   setPins(data);
-      // });
+    console.log(user.id);
+    if (text === "Created") {
+      try {
+        pinByUser({ userId: user.id }).then((response) => {
+          console.log({ response });
+          const pin = response.data;
+          setPins(pin);
+        });
+        console.log({ pins });
+      } catch (error) {
+        console.log(error);
+      }
     } else {
-      // const savedPinsQuery = userSavedPinsQuery(userId);
+      try {
+        pinSaveByUser({ userId: user.id }).then((response) => {
+          console.log({ response });
 
-      // client.fetch(savedPinsQuery).then((data) => {
-      //   setPins(data);
-      // });
+          const pin = response.data;
+          setPins(pin);
+        });
+        console.log({ pins });
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }, [text, userId]);
+  }, [text, user.id]);
 
-  const logout = () => {
-    localStorage.clear();
+  const logout = async () => {
+    await logOutApi();
+    dispatch(logOut());
+    
 
-    navigate('/login');
+    navigate("/login");
   };
 
   if (!user) return <Spinner message="Loading profile" />;
@@ -72,23 +96,14 @@ const UserProfile = () => {
             {user.username}
           </h1>
           <div className="absolute top-0 z-1 right-0 p-2">
-            {/* {userId === User.googleId && (
-              <GoogleLogout
-                clientId={`${process.env.REACT_APP_GOOGLE_API_TOKEN}`}
-                render={(renderProps) => (
-                  <button
-                    type="button"
-                    className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
-                    onClick={renderProps.onClick}
-                    disabled={renderProps.disabled}
-                  >
-                    <AiOutlineLogout color="red" fontSize={21} />
-                  </button>
-                )}
-                onLogoutSuccess={logout}
-                cookiePolicy="single_host_origin"
-              />
-            )} */}
+            <button
+              type="button"
+              className=" bg-white p-2 rounded-full cursor-pointer outline-none shadow-md"
+              onClick={logout}
+              disabled={null}
+            >
+              <AiOutlineLogout color="red" fontSize={21} />
+            </button>
           </div>
         </div>
         <div className="text-center mb-7">
@@ -96,9 +111,11 @@ const UserProfile = () => {
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
-              setActiveBtn('created');
+              setActiveBtn("created");
             }}
-            className={`${activeBtn === 'created' ? activeBtnStyles : notActiveBtnStyles}`}
+            className={`${
+              activeBtn === "created" ? activeBtnStyles : notActiveBtnStyles
+            }`}
           >
             Created
           </button>
@@ -106,9 +123,11 @@ const UserProfile = () => {
             type="button"
             onClick={(e) => {
               setText(e.target.textContent);
-              setActiveBtn('saved');
+              setActiveBtn("saved");
             }}
-            className={`${activeBtn === 'saved' ? activeBtnStyles : notActiveBtnStyles}`}
+            className={`${
+              activeBtn === "saved" ? activeBtnStyles : notActiveBtnStyles
+            }`}
           >
             Saved
           </button>
@@ -119,12 +138,11 @@ const UserProfile = () => {
         </div>
 
         {pins?.length === 0 && (
-        <div className="flex justify-center font-bold items-center w-full text-1xl mt-2">
-          No Pins Found!
-        </div>
+          <div className="flex justify-center font-bold items-center w-full text-1xl mt-2">
+            No Pins Found!
+          </div>
         )}
       </div>
-
     </div>
   );
 };

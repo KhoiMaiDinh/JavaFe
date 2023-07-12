@@ -31,11 +31,19 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 method: 'GET',
             })
         }),
+        logOutApi: builder.mutation({
+            query: credentials => ({
+                url: '/api/v1/logout',
+                credentials: 'include',
+                method: 'GET',
+            })
+        })
     })
 })
 
 export const {
     useLoginMutation,
     useGetUserInfoMutation,
-    useRefreshTokenMutation
+    useRefreshTokenMutation,
+    useLogOutApiMutation
 } = authApiSlice
